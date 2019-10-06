@@ -1,10 +1,9 @@
 import pandas as pd
 import requests as req
-from sklearn import datasets, model_selection, metrics
+import io
+from sklearn import model_selection, metrics
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
-import numpy
-import io
 
 # TODO: Above and beyound point: read directly from url
 
@@ -18,8 +17,8 @@ class_to_num = { "unacc": 0, "acc": 1, "good": 2, "vgood": 3}
 
 if response.ok:
     data = response.content.decode('utf8')
-    df = pd.read_csv(io.StringIO(data), names=column_name)
-    df.replace({"buying_price": level_values,
+    car_df = pd.read_csv(io.StringIO(data), names=column_name)
+    car_df.replace({"buying_price": level_values,
                 "maint_price": level_values,
                 "doors": numeric_values,
                 "passenger_num": numeric_values,
@@ -28,8 +27,8 @@ if response.ok:
                 "class": class_to_num
                 }, inplace=True)
 
-    car_data = df.loc[:, column_name[:-1]]
-    car_targets = df[df.columns[len(df.columns)-1]]
+    car_data = car_df.loc[:, column_name[:-1]]
+    car_targets = car_df[car_df.columns[len(car_df.columns)-1]]
 
     train_data_set, test_data_set, train_target_set, test_target_set = model_selection.train_test_split(car_data,
                                                                                                         car_targets,
@@ -47,3 +46,23 @@ if response.ok:
 
     y_pred = classifier.predict(test_data_set)
     print("Accuracy:", metrics.accuracy_score(test_target_set, y_pred))
+
+##########################################################################################
+
+response = req.get("https://archive.ics.uci.edu/ml/machine-learning-databases/auto-mpg/auto-mpg.data")
+mpg_columns = ["mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "model_yr", "origin", "car_name"]
+
+if response.ok:
+    data = response.content.decode('utf8')
+    mpg_df = pd.read_csv(io.StringIO(data), names=mpg_columns, sep="\s+")
+
+mpg_data = mpg_df.loc[:, mpg_columns[:-1]]
+
+print(mpg_data)
+print(mpg_data.isna().sum())
+print(mpg_data.dtypes)
+print(mpg_data.horsepower.unique())
+
+mpg_data = mpg_data[mpg_data.horsepower != '?'] # removing unknown information
+
+print('?' in mpg_data.horsepower) # check to see if it worked
