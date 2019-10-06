@@ -3,6 +3,7 @@ import requests as req
 import io
 from sklearn import model_selection
 from sklearn.neighbors import KNeighborsRegressor
+from sklearn.preprocessing import StandardScaler
 
 response = req.get("https://archive.ics.uci.edu/ml/machine-learning-databases/auto-mpg/auto-mpg.data")
 mpg_columns = ["mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "model_yr", "origin", "car_name"]
@@ -39,6 +40,12 @@ train_data_set, test_data_set, train_target_set, test_target_set = model_selecti
                                                                                                     shuffle=True,
                                                                                                     train_size=0.3)
 # TODO: standardize the data and display R2 score
+scaler = StandardScaler()
+scaler.fit(train_data_set)
+
+train_data_set = scaler.transform(train_data_set)
+test_data_set = scaler.transform(test_data_set)
+
 neighbor_regressor = KNeighborsRegressor(n_neighbors=1)
 neighbor_regressor.fit(train_target_set, train_target_set)
 predicted = neighbor_regressor.predict(test_target_set)
