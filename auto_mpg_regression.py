@@ -1,6 +1,7 @@
 import pandas as pd
 import requests as req
 import io
+from sklearn import model_selection
 
 response = req.get("https://archive.ics.uci.edu/ml/machine-learning-databases/auto-mpg/auto-mpg.data")
 mpg_columns = ["mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "model_yr", "origin", "car_name"]
@@ -28,3 +29,11 @@ mpg_data["USA"] = (origin == 1) * 1.0
 mpg_data["Europe"] = (origin == 2) * 1.0
 mpg_data["Japan"] = (origin == 3) * 1.0
 
+# separate the labels into their own list
+mpg_data_targets = mpg_data.pop('mpg')
+
+# split into train and test
+train_data_set, test_data_set, train_target_set, test_target_set = model_selection.train_test_split(mpg_data,
+                                                                                                    mpg_data_targets,
+                                                                                                    shuffle=True,
+                                                                                                    train_size=0.3)
