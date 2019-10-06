@@ -47,5 +47,3 @@ if response.ok:
     y_pred = classifier.predict(test_data_set)
     print("Accuracy:", metrics.accuracy_score(test_target_set, y_pred))
 
-##########################################################################################
-
