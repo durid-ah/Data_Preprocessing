@@ -39,7 +39,7 @@ train_data_set, test_data_set, train_target_set, test_target_set = model_selecti
                                                                                                     mpg_data_targets,
                                                                                                     shuffle=True,
                                                                                                     train_size=0.3)
-# TODO: standardize the data and display R2 score
+
 scaler = StandardScaler()
 scaler.fit(train_data_set)
 

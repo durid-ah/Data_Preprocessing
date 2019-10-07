@@ -1,4 +1,7 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.preprocessing import StandardScaler
 
 schools = {"GP": 1, "MS": 2}
 sex = {"F": 0, "M": 1}
@@ -10,8 +13,9 @@ reason = {'home': 1, 'reputation': 2, 'course': 3, 'other': 4}
 guardian = {"mother": 1, "father": 2, "other": 3}
 yes_no = {"yes": 1, "no": 0}
 
-
 df = pd.read_csv(filepath_or_buffer="student-mat.csv", sep=";")
+
+# turning the strings into objects
 df.replace({
     "school": schools,
     "sex": sex,
@@ -32,6 +36,7 @@ df.replace({
     "romantic": yes_no
 }, inplace=True)
 
+# Hot encoding the school, reason and guardian columns
 school_column = df.pop('school')
 df['GP_school'] = (schools == 1) * 1.0
 df['MS_school'] = (schools == 2) * 1.0
@@ -47,4 +52,19 @@ df['m_guardian'] = (guardian_column == 1) * 1.0
 df['f_guardian'] = (guardian_column == 2) * 1.0
 df['oth_guardian'] = (guardian_column == 3) * 1.0
 
-print(df)
+# Splitting the labels
+data_labels = df.pop('G3')
+
+# creating the test and train sets
+train_data_set, test_data_set, train_target_set, test_target_set = train_test_split(df,
+                                                                                    data_labels,
+                                                                                    shuffle=True,
+                                                                                    train_size=0.3)
+
+neighbor_regressor = KNeighborsRegressor(n_neighbors=5)
+neighbor_regressor.fit(train_data_set, train_target_set)
+predicted = neighbor_regressor.predict(test_data_set)
+
+score = neighbor_regressor.score(test_data_set, test_target_set)
+print(score)
+
