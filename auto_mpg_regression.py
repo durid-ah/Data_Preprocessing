@@ -49,3 +49,6 @@ test_data_set = scaler.transform(test_data_set)
 neighbor_regressor = KNeighborsRegressor(n_neighbors=5)
 neighbor_regressor.fit(train_data_set, train_target_set)
 predicted = neighbor_regressor.predict(test_data_set)
+
+score = neighbor_regressor.score(test_data_set, test_target_set)
+print(score)
