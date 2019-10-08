@@ -1,6 +1,7 @@
 import pandas as pd
 import requests as req
 import io
+import matplotlib.pyplot as plt
 from sklearn import model_selection
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.preprocessing import StandardScaler
@@ -21,7 +22,7 @@ print(mpg_data.isna().sum())
 print(mpg_data.dtypes)
 print(mpg_data.horsepower.unique())
 
-mpg_data = mpg_data[mpg_data.horsepower != '?'] # removing unknown information
+mpg_data = mpg_data[mpg_data.horsepower != '?']  # removing unknown information
 
 print('?' in mpg_data.horsepower) # check to see if it worked
 
@@ -51,4 +52,19 @@ neighbor_regressor.fit(train_data_set, train_target_set)
 predicted = neighbor_regressor.predict(test_data_set)
 
 score = neighbor_regressor.score(test_data_set, test_target_set)
-print(score)
+
+score_list = []
+k_list = [k for k in range(1, 50)]
+
+for i in range(1, 50):
+    neighbor_regressor = KNeighborsRegressor(n_neighbors=i)
+    neighbor_regressor.fit(train_data_set, train_target_set)
+    predicted = neighbor_regressor.predict(test_data_set)
+
+    score = neighbor_regressor.score(test_data_set, test_target_set)
+    score_list.append(score)
+
+plt.plot(k_list, score_list)
+plt.ylabel('socres')
+plt.xlabel('k value')
+plt.show()

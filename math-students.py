@@ -1,7 +1,8 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsRegressor
-from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import r2_score
 
 schools = {"GP": 1, "MS": 2}
 sex = {"F": 0, "M": 1}
@@ -52,6 +53,9 @@ df['m_guardian'] = (guardian_column == 1) * 1.0
 df['f_guardian'] = (guardian_column == 2) * 1.0
 df['oth_guardian'] = (guardian_column == 3) * 1.0
 
+df.pop('Mjob')
+df.pop('Fjob')
+
 # Splitting the labels
 data_labels = df.pop('G3')
 
@@ -65,6 +69,21 @@ neighbor_regressor = KNeighborsRegressor(n_neighbors=5)
 neighbor_regressor.fit(train_data_set, train_target_set)
 predicted = neighbor_regressor.predict(test_data_set)
 
-score = neighbor_regressor.score(test_data_set, test_target_set)
+score = r2_score(test_target_set, predicted)
 print(score)
 
+score_list = []
+k_list = [k for k in range(1, 50)]
+
+for i in range(1, 50):
+    neighbor_regressor = KNeighborsRegressor(n_neighbors=i)
+    neighbor_regressor.fit(train_data_set, train_target_set)
+    predicted = neighbor_regressor.predict(test_data_set)
+
+    score = neighbor_regressor.score(test_data_set, test_target_set)
+    score_list.append(score)
+
+plt.plot(k_list, score_list)
+plt.ylabel('socres')
+plt.xlabel('k value')
+plt.show()
